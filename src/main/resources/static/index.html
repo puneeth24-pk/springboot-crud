@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
     <title>Student Management</title>
 
     <style>
@@ -12,7 +14,7 @@
         }
 
         .container{
-            width:600px;
+            width:750px;
             margin:auto;
             background:white;
             padding:20px;
@@ -25,12 +27,16 @@
         }
 
         button{
-            padding:10px;
-            background:green;
-            color:white;
+            padding:8px 12px;
+            margin:5px;
             border:none;
+            border-radius:5px;
             cursor:pointer;
         }
+
+        .addBtn{background:green;color:white;}
+        .updateBtn{background:orange;color:white;}
+        .deleteBtn{background:red;color:white;}
 
         table{
             width:100%;
@@ -43,6 +49,11 @@
             padding:10px;
         }
 
+        footer{
+            margin-top:20px;
+            color:gray;
+        }
+
     </style>
 
 </head>
@@ -51,23 +62,27 @@
 
 <div class="container">
 
-    <h2>SPRING BOOT STUDENT CRUD APP/h2>
+    <h2>SPRING BOOT CRUD Application</h2>
 
     <input id="name" placeholder="Name">
     <input id="age" placeholder="Age">
     <input id="dept" placeholder="Department">
 
-    <button onclick="addStudent()">Add Student</button>
+    <br>
+
+    <button class="addBtn" onclick="addStudent()">Add Student</button>
 
     <table>
 
         <thead>
+
         <tr>
             <th>Name</th>
             <th>Age</th>
             <th>Department</th>
-            <th>Action</th>
+            <th>Actions</th>
         </tr>
+
         </thead>
 
         <tbody id="studentTable"></tbody>
@@ -76,9 +91,15 @@
 
 </div>
 
+<footer>
+
+    <p>puneeth@creates</p>
+
+</footer>
+
 <script>
 
-    const API="http://localhost:8080/students";
+    const API="/students";
 
     function loadStudents(){
 
@@ -86,20 +107,27 @@
             .then(res=>res.json())
             .then(data=>{
 
-                let table="";
+                let rows="";
 
                 data.forEach(student=>{
 
-                    table+=`
+                    rows+=`
 <tr>
+
 <td>${student.name}</td>
 <td>${student.age}</td>
 <td>${student.department}</td>
 
 <td>
-<button onclick="deleteStudent('${student.id}')">
+
+<button class="updateBtn" onclick="updateStudent('${student.id}')">
+Update
+</button>
+
+<button class="deleteBtn" onclick="deleteStudent('${student.id}')">
 Delete
 </button>
+
 </td>
 
 </tr>
@@ -107,7 +135,7 @@ Delete
 
                 });
 
-                document.getElementById("studentTable").innerHTML=table;
+                document.getElementById("studentTable").innerHTML=rows;
 
             });
 
@@ -136,6 +164,30 @@ Delete
 
         fetch(API+"/"+id,{
             method:"DELETE"
+        })
+            .then(()=>loadStudents());
+
+    }
+
+    function updateStudent(id){
+
+        const name=prompt("Enter new name");
+        const age=prompt("Enter new age");
+        const dept=prompt("Enter new department");
+
+        const student={
+            id:id,
+            name:name,
+            age:parseInt(age),
+            department:dept
+        };
+
+        fetch(API,{
+            method:"PUT",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(student)
         })
             .then(()=>loadStudents());
 
